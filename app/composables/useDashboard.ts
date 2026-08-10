@@ -7,6 +7,7 @@ const _useDashboard = () => {
 
   defineShortcuts({
     'g-h': () => router.push('/'),
+    
   })
 
   watch(() => route.fullPath, () => {

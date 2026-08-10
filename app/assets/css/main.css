@@ -1,2 +1,11 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+
+html {
+    overflow: hidden;
+    height: 100%;
+}
+
+:root {
+    --ui-header-height: 2.5rem;
+}

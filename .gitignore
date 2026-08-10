@@ -25,6 +25,7 @@ logs
 
 # IDE files
 .vscode
+.idea
 
 # Claude
 .claude
