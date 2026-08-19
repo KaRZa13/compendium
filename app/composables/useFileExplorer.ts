@@ -5,21 +5,16 @@ import { join } from '@tauri-apps/api/path'
 import { load, type Store } from '@tauri-apps/plugin-store'
 import type { TreeItem } from '@nuxt/ui'
 
-// Étend le TreeItem de Nuxt UI avec les infos dont on a besoin pour manipuler
-// de vrais fichiers/dossiers (chemin absolu, type, et lazy-loading des enfants).
 interface FileTreeItem extends TreeItem {
   path: string
   isDir: boolean
   children?: FileTreeItem[]
 }
 
-// Le store Tauri (plugin-store) persiste le dernier dossier ouvert dans ce
-// fichier JSON, sous cette clé, pour le retrouver au prochain lancement.
 const STORE_FILE = 'settings.json'
 const STORE_KEY = 'rootPath'
+const WORKSPACES_KEY = 'workspaces'
 
-// Choisit une icône Lucide selon l'extension du fichier (les dossiers n'ont
-// pas d'icône ici : UTree affiche déjà une icône de dossier par défaut).
 // TODO : on pourrait utiliser un mapping plus complet, ou même un choisir parmis les sets d'icônes Lucide (outline, solid, duotone, cappucin, vscode, etc...) selon les préférences de l'utilisateur.
 function iconFor(entry: DirEntry) {
   if (entry.isDirectory) return undefined
@@ -33,8 +28,6 @@ function iconFor(entry: DirEntry) {
   }
 }
 
-// Convertit les DirEntry renvoyées par readDir() en FileTreeItem utilisables
-// par le composant UTree, avec le chemin absolu reconstruit via join().
 async function entriesToItems(dirPath: string, entries: DirEntry[]): Promise<FileTreeItem[]> {
   const items = await Promise.all(entries.map(async (entry) => {
     const item: FileTreeItem = {
@@ -43,79 +36,79 @@ async function entriesToItems(dirPath: string, entries: DirEntry[]): Promise<Fil
       isDir: entry.isDirectory,
       icon: iconFor(entry)
     }
-    // Enfant "fantôme" (label vide) pour qu'un dossier affiche une flèche
-    // d'expansion sans avoir encore lu son contenu (voir onToggle plus bas).
     if (entry.isDirectory) item.children = [{ label: '', path: '', isDir: false }]
     return item
   }))
 
-  // Dossiers d'abord, puis tri alphabétique dans chaque groupe.
   return items.sort((a, b) => (a.isDir !== b.isDir ? (a.isDir ? -1 : 1) : a.label!.localeCompare(b.label!)))
 }
 
-// createSharedComposable : une seule instance de cet état est partagée par
-// tous les composants qui appellent useFileExplorer() (même sidebar, même
-// arbre de fichiers partout dans l'app).
-export const useFileExplorer = createSharedComposable(() => {
-  const rootPath = ref<string | null>(null) // dossier racine actuellement ouvert
-  const items = ref<FileTreeItem[]>([]) // arbre affiché par UTree
-  const selectedItem = ref<FileTreeItem>() // élément sélectionné dans l'arbre (pour créer/supprimer au bon endroit)
-  let store: Store | null = null // handle vers settings.json (plugin-store), initialisé dans init()
+const _useFileExplorer = () => {
+  const rootPath = ref<string | null>(null)
+  const workspaces = ref<string[]>([])
+  const items = ref<FileTreeItem[]>([])
+  const selectedItem = ref<FileTreeItem>()
+  let store: Store | null = null
 
-  // Ouvre la boîte de dialogue native de sélection de dossier, et sauvegarde
-  // le choix dans le store pour le retrouver au prochain démarrage.
-  async function pickFolder() {
-    const selected = await open({ directory: true, multiple: false })
-    if (typeof selected !== 'string') return null
-    await store?.set(STORE_KEY, selected)
-    return selected
+  const needsRootFolder = computed(() => rootPath.value === null)
+
+  async function resetRootFolder() {
+    rootPath.value = null
+    items.value = []
   }
 
-  // (Re)lit le contenu du dossier racine et reconstruit l'arbre affiché.
+  async function pickFolder() {
+    const selected = await open({ directory: true, multiple: false })
+    return typeof selected === 'string' ? selected : null
+  }
+
   async function loadRoot() {
     if (!rootPath.value) return
     items.value = await entriesToItems(rootPath.value, await readDir(rootPath.value))
   }
 
-  // À appeler au montage du composant : ouvre le store, restaure le dernier
-  // dossier utilisé (ou en demande un nouveau s'il n'y en a pas encore), puis
-  // charge son contenu.
+  async function setRootFolder(path: string) {
+    await store?.set(STORE_KEY, path)
+    rootPath.value = path
+    if (!workspaces.value.includes(path)) {
+      workspaces.value.push(path)
+      await store?.set(WORKSPACES_KEY, workspaces.value)
+    }
+    await loadRoot()
+  }
+
   async function init() {
     store = await load(STORE_FILE)
-    rootPath.value = (await store.get<string>(STORE_KEY)) ?? (await pickFolder())
+    rootPath.value = (await store.get<string>(STORE_KEY)) ?? null
+    workspaces.value = (await store.get<string[]>(WORKSPACES_KEY)) ?? []
     if (rootPath.value) await loadRoot()
   }
 
-  // Charge le contenu réel d'un sous-dossier et remplace son enfant fantôme.
   async function loadChildren(item: FileTreeItem) {
     item.children = await entriesToItems(item.path, await readDir(item.path))
   }
 
-  // Handler d'expansion de UTree : lazy-loading. On ne lit le contenu d'un
-  // dossier que la première fois qu'on l'ouvre (détecté via l'enfant
-  // fantôme au label vide posé par entriesToItems).
   function onToggle(e: CustomEvent<{ isExpanded: boolean }>, item: FileTreeItem) {
-    if (item.isDir && e.detail.isExpanded && item.children?.[0]?.label === '') {
+    if (item.isDir && !e.detail.isExpanded && item.children?.[0]?.label === '') {
       loadChildren(item)
     }
   }
 
-  // Change de dossier racine (bouton "changer de dossier").
   async function changeFolder() {
     const selected = await pickFolder()
-    if (selected) {
-      rootPath.value = selected
-      await loadRoot()
-    }
+    if (selected) await setRootFolder(selected)
   }
 
-  // Détermine où créer un nouveau fichier/dossier : dans le dossier
-  // sélectionné s'il y en a un, sinon à la racine.
+  async function createWorkspace(name: string, location: string) {
+    const path = await join(location, name)
+    await mkdir(path)
+    await setRootFolder(path)
+  }
+
   function targetDir() {
     return selectedItem.value?.isDir ? selectedItem.value.path : rootPath.value
   }
 
-  // Crée un fichier vide via un prompt natif, puis rafraîchit l'arbre.
   async function createFile() {
     const dir = targetDir()
     if (!dir) return
@@ -125,7 +118,6 @@ export const useFileExplorer = createSharedComposable(() => {
     await loadRoot()
   }
 
-  // Crée un dossier via un prompt natif, puis rafraîchit l'arbre.
   async function createFolder() {
     const dir = targetDir()
     if (!dir) return
@@ -135,33 +127,57 @@ export const useFileExplorer = createSharedComposable(() => {
     await loadRoot()
   }
 
-  // Supprime le fichier sélectionné (no-op si rien n'est sélectionné ou si
-  // la sélection est un dossier).
-  async function removeSelectedFile() {
+  async function deleteSelectedFile() {
     if (!selectedItem.value || selectedItem.value.isDir) return
     await remove(selectedItem.value.path)
     selectedItem.value = undefined
     await loadRoot()
   }
 
-  // Supprime le dossier sélectionné et tout son contenu (recursive: true).
-  async function removeSelectedFolder() {
+  async function deleteSelectedFolder() {
     if (!selectedItem.value || !selectedItem.value.isDir) return
     await remove(selectedItem.value.path, { recursive: true })
     selectedItem.value = undefined
     await loadRoot()
   }
 
+  // DEBUG : affiche le contenu brut du store Tauri (settings.json).
+  async function debugShowStore() {
+    const entries = store ? await store.entries() : []
+    window.alert(JSON.stringify(entries, null, 2))
+    console.log('DEBUG : store entries', JSON.stringify(entries, null, 2))
+  }
+
+  // DEBUG : vide entièrement le store Tauri et réinitialise l'état associé.
+  async function debugClearStore() {
+    await store?.clear()
+    await store?.save()
+    rootPath.value = null
+    workspaces.value = []
+    items.value = []
+    selectedItem.value = undefined
+  }
+
   return {
     rootPath,
+    workspaces,
     items,
     selectedItem,
+    needsRootFolder,
     init,
+    pickFolder,
     onToggle,
     changeFolder,
+    setRootFolder,
+    createWorkspace,
     createFile,
     createFolder,
-    removeSelectedFile,
-    removeSelectedFolder
+    deleteSelectedFile,
+    deleteSelectedFolder,
+    resetRootFolder,
+    debugShowStore,
+    debugClearStore,
   }
-})
+}
+
+export const useFileExplorer = createSharedComposable(_useFileExplorer)

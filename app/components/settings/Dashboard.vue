@@ -35,7 +35,6 @@ import type { NavigationMenuItem } from '@nuxt/ui'
 const components: Record<string, any> = {
   general: resolveComponent('SettingsGeneral'),
   appearance: resolveComponent('SettingsAppearance'),
-  interface: resolveComponent('SettingsInterface'),
   editor: resolveComponent('SettingsEditor'),
   shortcuts: resolveComponent('SettingsShortcuts'),
   canvas: resolveComponent('SettingsCanvas'),

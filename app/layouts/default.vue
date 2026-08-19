@@ -33,6 +33,9 @@
           <SettingsDashboard />
         </template>
       </UModal>
+      <UColorModeButton />
+      <UButton variant="ghost" color="neutral" icon="i-lucide-bug" @click="debugShowStore" />
+      <UButton variant="ghost" color="error" icon="i-lucide-trash-2" @click="debugClearStore" />
       <div class="flex gap-2">
         <UButton variant="ghost" color="neutral" icon="i-lucide-minus" @click="minimize" />
         <UButton size="sm" variant="ghost" color="neutral":icon="isMaximized ? 'i-lucide-minimize-2' : 'i-lucide-square'" @click="toggleMaximize" />
@@ -53,7 +56,7 @@
       :max-size="40"
       :ui="{
         root: ['rounded-lg min-h-[calc(100svh-((var(--ui-header-height))px))] min-w-0 transition-[width] duration-300 ease-out overflow-hidden',
-          !leftCollapsed ? 'border-1 border-neutral-800 mx-2 mb-2' : 'border-none'
+          !leftCollapsed ? 'border-1 border-neutral-200 dark:border-neutral-800 mx-2 mb-2' : 'border-none'
         ],
         body: !leftCollapsed ? 'rounded-lg px-2 pb-2' : '',
       }"
@@ -83,7 +86,7 @@
       </template>
 
       <template #footer="{ collapsed }">
-        <SidebarAppearanceMenu />
+        <WorkspaceSetup />
       </template>
     </UDashboardSidebar>
 
@@ -112,7 +115,7 @@
         root: ['border-none rounded-lg min-h-[calc(100svh-((var(--ui-header-height))px))] min-w-0 transition-[width] duration-300 ease-out overflow-hidden',
           !rightCollapsed ? 'px-2 pb-2' : ''
         ],
-        body: !rightCollapsed ? 'border-1 border-neutral-800 rounded-lg px-2 pb-2' : '',
+        body: !rightCollapsed ? 'border-1 border-neutral-200 dark:border-neutral-800 rounded-lg px-2 pb-2' : '',
       }"
     >
       <template #default="{ collapsed }">
@@ -122,6 +125,8 @@
       </template>
     </UDashboardSidebar>
   </UDashboardGroup>
+
+  <OnboardingWorkspaceSetupModal />
 </template>
 
 <script setup lang="ts">
@@ -140,7 +145,7 @@ const toggleMaximize = () => {
   isMaximized.value = !isMaximized.value
 }
 
-const { items, selectedItem, init, onToggle, createFile, createFolder, removeSelectedFolder, removeSelectedFile } = useFileExplorer()
+const { items, selectedItem, init, onToggle, createFile, createFolder, deleteSelectedFolder, deleteSelectedFile, debugShowStore, debugClearStore } = useFileExplorer()
 
 const buttons: Array<{
   color: ButtonProps['color']
@@ -168,21 +173,21 @@ const buttons: Array<{
     variant: 'ghost',
     icon: 'i-lucide-arrow-up-narrow-wide',
     tooltip: 'Change sort order',
-    onClick: removeSelectedFolder
+    onClick: deleteSelectedFolder
   },
   {
     color: 'neutral',
     variant: 'ghost',
     icon: 'i-lucide-chevrons-up-down',
     tooltip: 'Expand all',
-    onClick: removeSelectedFile
+    onClick: deleteSelectedFile
   },
   {
     color: 'neutral',
     variant: 'ghost',
     icon: 'i-lucide-chevrons-down-up',
     tooltip: 'Collapse all',
-    onClick: removeSelectedFile
+    onClick: deleteSelectedFile
   }
 ]
 

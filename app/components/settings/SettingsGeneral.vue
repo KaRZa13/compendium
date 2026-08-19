@@ -39,12 +39,12 @@
           Language
         </span>
         <span class="text-sm text-dimmed">
-          Change the display language 
+          Change the display language
         </span>
       </div>
       <ULocaleSelect v-model="locale" :locales="Object.values(locales)" size="md"/>
     </div>
-  </UCard>    
+  </UCard>
 </template>
 
 <script setup lang="ts">

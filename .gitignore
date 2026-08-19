@@ -30,3 +30,4 @@ logs
 # Claude
 .claude
 CLAUDE.*
+skills-lock.*
