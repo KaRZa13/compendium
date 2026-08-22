@@ -1,8 +1,8 @@
-import { useLocalStorage } from '@vueuse/core'
+import { useLocalStorage, createSharedComposable } from '@vueuse/core'
 import { omit } from '#ui/utils'
 import colors from 'tailwindcss/colors'
 
-export function useTheme() {
+const _useTheme = () => {
   const appConfig = useAppConfig()
 
   const _radius = useLocalStorage('nuxt-ui-radius', 0.25)
@@ -114,3 +114,5 @@ export function useTheme() {
     resetTheme
   }
 }
+
+export const useTheme = createSharedComposable(_useTheme)

@@ -1,0 +1,4 @@
+<template>
+  <UEditor />
+
+</template>

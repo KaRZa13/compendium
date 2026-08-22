@@ -1,48 +1,5 @@
 <template>
-  <UHeader 
-    :ui="{
-      root: 'border-none',
-      container: 'h-full w-full sm:px-1.5 lg:px-1.5 px-1.5 max-w-none',
-    }"
-  >
-    <template #top>
-      <div data-tauri-drag-region class="absolute inset-0" />
-    </template>
-    <template #title>
-      <UButton 
-        variant="ghost"
-        color="neutral"
-        :icon="!leftCollapsed ? 'i-lucide-panel-left-close' : 'i-lucide-panel-left-open'"
-        @click="leftCollapsed = !leftCollapsed" 
-      />
-    </template>
-
-    <div>Compendium</div>
-
-    <template #right>
-      <UButton 
-        variant="ghost"
-        color="neutral"
-        :icon="!rightCollapsed ? 'i-lucide-panel-left-open' : 'i-lucide-panel-left-close'"
-        @click="rightCollapsed = !rightCollapsed" 
-      />
-      <UModal :ui="{ content: 'max-w-5xl h-[80vh]' }">
-        <UButton icon="i-lucide-settings" color="neutral" variant="ghost" />
-
-        <template #content>
-          <SettingsDashboard />
-        </template>
-      </UModal>
-      <UColorModeButton />
-      <UButton variant="ghost" color="neutral" icon="i-lucide-bug" @click="debugShowStore" />
-      <UButton variant="ghost" color="error" icon="i-lucide-trash-2" @click="debugClearStore" />
-      <div class="flex gap-2">
-        <UButton variant="ghost" color="neutral" icon="i-lucide-minus" @click="minimize" />
-        <UButton size="sm" variant="ghost" color="neutral":icon="isMaximized ? 'i-lucide-minimize-2' : 'i-lucide-square'" @click="toggleMaximize" />
-        <UButton variant="ghost" color="error" icon="i-lucide-x" @click="close" />
-      </div>
-    </template>
-  </UHeader>
+  <WindowHeader v-model:left-collapsed="leftCollapsed" v-model:right-collapsed="rightCollapsed" />
 
   <UDashboardGroup :ui="{ base: 'top-(--ui-header-height)' }">
     <UDashboardSidebar
@@ -63,30 +20,13 @@
     >
       <template #default="{ collapsed }">
         <section v-show="!collapsed" class="flex flex-col gap-4" >
-          <div class="w-full flex justify-center items-center gap-2">
-            <UTooltip 
-            v-for="(button, index) in buttons"
-            :key="index"
-            :text="button.tooltip"
-            >
-              <UButton
-                :color="button.color"
-                :variant="button.variant"
-                :icon="button.icon"
-                @click="button.onClick"
-              />
-            </UTooltip>
-          </div>
-          <UTree
-            v-model="selectedItem"
-            :items="items"
-            @toggle="onToggle"
-          />
+          <SidebarContextButton />
+          <SidebarFileTree />
         </section>
       </template>
 
       <template #footer="{ collapsed }">
-        <WorkspaceSetup />
+        <SidebarWorkspaceSetup v-show="!collapsed" />
       </template>
     </UDashboardSidebar>
 
@@ -130,66 +70,9 @@
 </template>
 
 <script setup lang="ts">
-import type { ButtonProps } from '@nuxt/ui'
-import { getCurrentWindow } from '@tauri-apps/api/window'
-
+// Sidebar State
 const leftCollapsed = ref(false)
 const rightCollapsed = ref(false)
-
-const isMaximized = ref(false)
-const appWindow = getCurrentWindow()
-const close = () => appWindow.close()
-const minimize = () => appWindow.minimize()
-const toggleMaximize = () => {
-  appWindow.toggleMaximize()
-  isMaximized.value = !isMaximized.value
-}
-
-const { items, selectedItem, init, onToggle, createFile, createFolder, deleteSelectedFolder, deleteSelectedFile, debugShowStore, debugClearStore } = useFileExplorer()
-
-const buttons: Array<{
-  color: ButtonProps['color']
-  variant: ButtonProps['variant']
-  icon: string
-  tooltip: string
-  onClick: (event: MouseEvent) => void
-}> = [
-  {
-    color: 'neutral',
-    variant: 'ghost',
-    icon: 'i-lucide-file-plus',
-    tooltip: 'Create File',
-    onClick: createFile
-  },
-  {
-    color: 'neutral',
-    variant: 'ghost',
-    icon: 'i-lucide-folder-plus',
-    tooltip: 'Create Folder',
-    onClick: createFolder
-  },
-  {
-    color: 'neutral',
-    variant: 'ghost',
-    icon: 'i-lucide-arrow-up-narrow-wide',
-    tooltip: 'Change sort order',
-    onClick: deleteSelectedFolder
-  },
-  {
-    color: 'neutral',
-    variant: 'ghost',
-    icon: 'i-lucide-chevrons-up-down',
-    tooltip: 'Expand all',
-    onClick: deleteSelectedFile
-  },
-  {
-    color: 'neutral',
-    variant: 'ghost',
-    icon: 'i-lucide-chevrons-down-up',
-    tooltip: 'Collapse all',
-    onClick: deleteSelectedFile
-  }
-]
 
 defineShortcuts({
   'ctrl_b' : () => {
@@ -198,9 +81,5 @@ defineShortcuts({
   'ctrl_alt_b': () => {
     rightCollapsed.value = !rightCollapsed.value
   }
-})
-
-onMounted(() => {
-  init()
 })
 </script>
