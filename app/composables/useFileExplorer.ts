@@ -22,8 +22,8 @@ export interface FileTreeItem extends TreeItem {
 export type SortBy = 'name' | 'modified' | 'created'
 export type SortDirection = 'asc' | 'desc'
 
-const STORE_FILE = 'settings.json'
-const STORE_KEY = 'rootPath'
+const STORE_FILE = 'workspace-settings.json'
+const ROOTH_PATH_KEY = 'rootPath'
 const WORKSPACES_KEY = 'workspaces'
 
 // TODO : on pourrait/devrait choisir parmis les sets d'icônes Lucide (outline, solid, duotone, cappucin, vscode, etc...)
@@ -39,7 +39,6 @@ function iconFor(entry: DirEntry) {
   }
 }
 
-// Les dossiers restent toujours groupés avant les fichiers, quel que soit le critère choisi.
 function compareItems(a: FileTreeItem, b: FileTreeItem, sortBy: SortBy, sortDirection: SortDirection) {
   if (a.isDir !== b.isDir) return a.isDir ? -1 : 1
 
@@ -146,7 +145,7 @@ const _useFileExplorer = () => {
   }
 
   async function setRootFolder(path: string) {
-    await store?.set(STORE_KEY, path)
+    await store?.set(ROOTH_PATH_KEY, path)
     rootPath.value = path
     if (!workspaces.value.includes(path)) {
       workspaces.value.push(path)
@@ -155,9 +154,9 @@ const _useFileExplorer = () => {
     await loadRoot()
   }
 
-  async function init() {
+  async function initFileExplorer() {
     store = await load(STORE_FILE)
-    rootPath.value = (await store.get<string>(STORE_KEY)) ?? null
+    rootPath.value = (await store.get<string>(ROOTH_PATH_KEY)) ?? null
     workspaces.value = (await store.get<string[]>(WORKSPACES_KEY)) ?? []
     if (rootPath.value) await loadRoot()
   }
@@ -208,7 +207,7 @@ const _useFileExplorer = () => {
     }
 
     if (rootPath.value === path) {
-      await store?.set(STORE_KEY, newPath)
+      await store?.set(ROOTH_PATH_KEY, newPath)
       rootPath.value = newPath
       await loadRoot()
     }
@@ -280,11 +279,10 @@ const _useFileExplorer = () => {
     await refreshDir(targetDir)
   }
 
-  // DEBUG : affiche le contenu brut du store Tauri (settings.json).
+  // DEBUG : affiche le contenu brut du store Tauri (workspace-settings.json).
   async function debugShowStore() {
     const entries = store ? await store.entries() : []
     window.alert(JSON.stringify(entries, null, 2))
-    console.log('DEBUG : store entries', JSON.stringify(entries, null, 2))
   }
 
   // DEBUG : vide entièrement le store Tauri et réinitialise l'état associé.
@@ -306,7 +304,7 @@ const _useFileExplorer = () => {
     sortBy,
     sortDirection,
     needsRootFolder,
-    init,
+    initFileExplorer,
     pickFolder,
     onToggle,
     loadChildren,

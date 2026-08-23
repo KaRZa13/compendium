@@ -1,0 +1,216 @@
+{
+    "welcome_modal": {
+        "title": "Bienvenue sur Compendium",
+        "description": "Pour commencer, choisissez ou créez un dossier pour stocker vos données.",
+
+        "base": {
+            "create_workspace": {
+                "label": "Créer un espace de travail",
+                "description": "Créez un nouvel espace de travail Compendium."
+            },
+            "open_workspace": {
+                "label": "Ouvrir un espace de travail",
+                "description": "Ouvrez un dossier comme espace de travail Compendium."
+            }
+        },
+
+        "new": {
+            "title": "Créer un nouveau Workspace local",
+            "workspace_name": {
+                "label": "Nom de l'espace de travail",
+                "placeholder": "Mon workspace",
+                "description": "Choississez un nom pour votre nouveau Workspace."
+            },
+            "workspace_location": {
+                "label": "Emplacement du Workspace",
+                "description": "Choississez un emplacement pour votre nouveau Workspace."
+            }
+        }
+    },
+
+    "navigation": {
+        "back": "Retour"
+    },
+
+    "buttons": {
+        "open": "Ouvrir",
+        "create": "Créer",
+        "browse": "Parcourir",
+        "reset": "Réinitialiser"
+    },
+
+    "context_menu": {
+        "new_folder": "Nouveau dossier",
+        "new_file": "Nouveau fichier",
+        "rename": "Renommer",
+        "delete": "Supprimer",
+        "manage_workspaces": "Gérer les Workspaces"
+    },
+
+    "tooltip": {
+        "new_folder": "Créer un nouveau dossier",
+        "new_file": "Créer un nouveau fichier",
+        "change_sort_order": "Modifier l'ordre de tri",
+        "expand_all": "Développer tous les éléments",
+        "collapse_all": "Réduire tous les éléments",
+        "settings": "Paramètres",
+        "expand_sidebar": "Développer la barre latérale",
+        "collapse_sidebar": "Réduire la barre latérale"
+    },
+
+    "filters": {
+        "name_asc": "Nom (A-Z)",
+        "name_desc": "Nom (Z-A)",
+        "modified_asc": "Date de modification (la plus ancienne en premier)",
+        "modified_desc": "Date de modification (la plus récente en premier)",
+        "created_asc": "Date de création (la plus ancienne en premier)",
+        "created_desc": "Date de création (la plus récente en premier)"
+    },
+
+    "settings": {
+        "title": "Paramètres",
+        "sections": {
+            "general_settings": {
+                "label": "Général",
+                "children": {
+                    "general": {
+                        "label": "Général",
+                        "children": {
+                            "version": {
+                                "label": "Version {versionNumber}",
+                                "changelog": "Voir le dernier changelog",
+                                "button_label": "Vérifier les mises à jour"
+                            },
+                            "auto_update": {
+                                "label": "Mise à jour automatique",
+                                "description": "Recevez automatiquement les mises à jour de Compendium lorsqu'elles sont disponibles."
+                            },
+                            "language": {
+                                "label": "Langue",
+                                "description": "Changez la langue de l'interface utilisateur"
+                            }
+                        }
+                    },
+                    "appearance": {
+                        "label": "Apparence",
+                        "children": {
+                            "theme": {
+                                "label": "Thème",
+                                "description": "Changez entre thème clair et sombre.",
+                                "button_label_light": "Clair",
+                                "button_label_dark": "Sombre"
+                            },
+                            "primary": {
+                                "label": "Couleur primaire",
+                                "colors": {
+                                    "white": "Blanc",
+                                    "black": "Noir",
+                                    "red": "Rouge",
+                                    "orange": "Orange",
+                                    "amber": "Ambre",
+                                    "yellow": "Jaune",
+                                    "lime": "Vert clair",
+                                    "green": "Vert",
+                                    "emerald": "Émeraude",
+                                    "teal": "Bleu canard",
+                                    "cyan": "Cyan",
+                                    "sky": "Bleu ciel",
+                                    "blue": "Bleu",
+                                    "indigo": "Indigo",
+                                    "violet": "Violet",
+                                    "purple": "Pourpre",
+                                    "fuchsia": "Fuchsia",
+                                    "pink": "Rose",
+                                    "rose": "Rose pâle"
+                                }
+                            },
+                            "background": {
+                                "label": "Couleur d'arrière-plan",
+                                "colors": {
+                                    "slate": "Gris ardoise",
+                                    "gray": "Gris",
+                                    "zinc": "Zinc",
+                                    "neutral": "Neutre",
+                                    "stone": "Pierre",
+                                    "taupe": "Taupe",
+                                    "mauve": "Mauve",
+                                    "mist": "Gris brume",
+                                    "olive": "Olive"
+                                }
+                            },
+                            "radius": {
+                                "label": "Arrondi"
+                            },
+                            "font": {
+                                "label": "Police"
+                            },
+                            "reset_theme": {
+                                "label": "Réinitialiser le thème",
+                                "description": "Réinitialise les paramètres du thème par défaut."
+                            }
+                        }
+                    },
+                    "editor": {
+                        "label": "Éditeur",
+                        "children": {
+                            "base" : {
+                                "fold_heading": {
+                                    "label": "Replier les titres",
+                                    "description": "Permet de replier tout le contenu sous un titre."
+                                },
+                                "fold_indent": {
+                                    "label": "Replier les indentations",
+                                    "description": "Permet de replier tout le contenu sous une indentation."
+                                },
+                                "line_numbers": {
+                                    "label": "Numéros de ligne",
+                                    "description": "Afficher les numéros de ligne dans l'éditeur."
+                                },
+                                "indent_guide": {
+                                    "label": "Guide d'indentation",
+                                    "description": "Afficher le guide d'indentation dans l'éditeur."
+                                }
+                            }, 
+                            "behavior": {
+                                "title": "Comportement",
+                                "auto_close_brackets": {
+                                    "label": "Fermeture automatique des crochets",
+                                    "description": "Fermeture automatique des crochets, parenthèses, etc..."
+                                },
+                                "auto_close_md_tags": {
+                                    "label": "Fermeture automatique des balises Markdown",
+                                    "description": "Fermeture automatique des balises Markdown"
+                                },
+                                "indent_using_tabs": {
+                                    "label": "Indentation avec des tabulations",
+                                    "description": "Utiliser des tabulations pour l'indentation au lieu d'espaces."
+                                },
+                                "indent_width": {
+                                    "label": "Largeur de l'indentation",
+                                    "description": "Définir le nombre d'espaces pour l'indentation."
+                                }
+                            }
+                        }
+                    },
+                    "shortcuts": {
+                        "label": "Raccourcis"
+                    }
+                }
+            },
+            "core": {
+                "label": "Core",
+                "children": {
+                    "canvas": {
+                        "label": "Canvas"
+                    },
+                    "daily_report": {
+                        "label": "Rapport quotidien"
+                    },
+                    "templates": {
+                        "label": "Modèles"
+                    }
+                }
+            }
+        }
+    }
+}

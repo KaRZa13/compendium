@@ -3,7 +3,7 @@
     :open="needsRootFolder"
     :dismissible="false"
     :close="needsRootFolder ? false : true"
-    :ui="{ content: workspaces.length > 0 ? 'max-w-5xl' : 'max-w-3xl' }"
+    :ui="{ content: workspaces.length > 0 ? 'max-w-6xl' : 'max-w-4xl' }"
   >
     <template #body>
       <section class="w-full flex">
@@ -68,9 +68,11 @@
               height="64"
               alt="Compendium"
             />
-            <span class="text-lg font-semibold">Bienvenue sur Compendium</span>
+            <span class="text-lg font-semibold">
+              {{ t('welcome_modal.title') }}
+            </span>
             <span class="text-sm text-center text-muted-foreground">
-              Pour commencer, choisissez ou créez un dossier pour stocker vos données.
+              {{ t('welcome_modal.description') }}
             </span>
           </div>
           <UTabs
@@ -84,90 +86,100 @@
           >
             <template #base>
               <UCard class="mx-8 my-6">
-                <div class="w-full min-h-10 flex px-1">
+                <div class="w-full min-h-10 flex items-center px-1">
                   <div class="w-full flex flex-col">
                     <span>
-                      Create new workspace
+                      {{ t('welcome_modal.base.create_workspace.label') }}
                     </span>
                     <span class="text-sm text-dimmed">
-                      Create a new Compendium workspace under a folder
+                      {{ t('welcome_modal.base.create_workspace.description') }}
                     </span>
                   </div>
                   <UButton 
-                    label="Create"
+                    :label="t('buttons.create')"
+                    color="neutral"
                     @click="activeTab = 'new'"
                     :ui="{ base: 'min-w-24 flex items-center justify-center cursor-pointer'}"
                   />
                 </div>
                 <USeparator class="my-4"/>
-                <div class="w-full min-h-10 flex px-1">
+                <div class="w-full min-h-10 flex items-center px-1">
                   <div class="w-full flex flex-col">
                     <span>
-                      Open folder as workspace
+                      {{ t('welcome_modal.base.open_workspace.label') }}
                     </span>
                     <span class="text-sm text-dimmed">
-                      Open an existing folder as a Compendium workspace
+                      {{ t('welcome_modal.base.open_workspace.description') }}
                     </span>
                   </div>
                   <UButton
-                    label="Open"
+                    :label="t('buttons.open')"
                     variant="outline"
+                    color="neutral"
                     @click="changeFolder"
                     :ui="{ base: 'min-w-24 flex items-center justify-center cursor-pointer'}"
                   />
                 </div>
               </UCard>
             </template>
+
             <template #new>
               <div class="w-full px-8">
                 <UButton 
-                  label="Back"
+                  :label="t('navigation.back')"
                   icon="i-lucide-arrow-left"
                   variant="link"
                   color="neutral"
                   @click="activeTab = 'base'"
                   :ui="{ base: 'flex items-center justify-center cursor-pointer'}"
                 />
-                <span class="font-bold pl-3">Create local workspace</span>
+                <span class="font-bold pl-3">{{ t('welcome_modal.new.title') }}</span>
               </div>
+
               <UCard class="mx-8 my-6">
                 <div class="w-full min-h-10 flex px-1">
                   <div class="w-full flex flex-col">
                     <span>
-                      Workspace name
+                      {{ t('welcome_modal.new.workspace_name.label') }}
                     </span>
                     <span class="text-sm text-dimmed">
-                      Pick a name for your new Compendium workspace
+                      {{ t('welcome_modal.new.workspace_name.description') }}
                     </span>
                   </div>
-                  <UInput v-model="folderName" placeholder="Workspace name" :ui="{ base: 'min-w-24 flex items-center justify-center'}"/>
+                  <UInput v-model="folderName" :placeholder="t('welcome_modal.new.workspace_name.placeholder')" :ui="{ base: 'min-w-24 flex items-center justify-center'}"/>
                 </div>
+
                 <USeparator class="my-4"/>
-                <div class="w-full min-h-10 flex px-1">
+
+                <div class="w-full min-h-10 flex items-center px-1">
                   <div class="w-full flex flex-col">
                     <span>
-                      Location
+                      {{ t('welcome_modal.new.workspace_location.label') }}
                     </span>
                     <span class="text-sm text-dimmed truncate">
-                      {{ location ?? 'Pick a place for your new workspace' }}
+                      {{ location ?? t('welcome_modal.new.workspace_location.description') }}
                     </span>
                   </div>
                   <UButton
-                    label="Browse"
+                    :label="t('buttons.browse')"
                     variant="outline"
+                    color="neutral"
                     @click="browseLocation"
                     :ui="{ base: 'min-w-24 flex items-center justify-center cursor-pointer'}"
                   />
                 </div>
               </UCard>
+
               <div class="w-full px-8 flex justify-end">
                 <UButton
-                  label="Create"
+                  :label="t('buttons.create')"
                   :disabled="!folderName || !location"
                   @click="handleCreateWorkspace"
+                  color="neutral"
                   :ui="{ base: 'min-w-24 flex items-center justify-center cursor-pointer'}"
                 />
               </div>
+
             </template>
           </UTabs>
         </div>
@@ -178,6 +190,8 @@
 
 <script setup lang="ts">
 import type { TabsItem } from '@nuxt/ui'
+
+const { t } = useI18n()
 
 const {
   workspaces,
@@ -216,7 +230,7 @@ async function confirmRename() {
 function getWorkspaceActions(workspace: string) {
   const actions = [
     {
-      label: 'Rename',
+      label: t('context_menu.rename'),
       icon: 'i-lucide-pencil-line',
       onSelect: () => {
         editingWorkspaceName.value = workspace
@@ -224,7 +238,7 @@ function getWorkspaceActions(workspace: string) {
       }
     },
     {
-      label: 'Delete',
+      label: t('context_menu.delete'),
       icon: 'i-lucide-trash-2',
       onSelect: () => removeWorkspace(workspace)
     }

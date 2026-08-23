@@ -8,6 +8,10 @@
 </template>
 
 <script setup lang="ts">
-const { style, link } = useTheme()
+const { style, link, initTheme } = useTheme()
 useHead({ style, link })
+
+onMounted(() => {
+  initTheme()
+})
 </script>

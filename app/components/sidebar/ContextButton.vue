@@ -14,7 +14,7 @@
     </UTooltip>
 
     <UDropdownMenu :items="sortItems" placement="bottom-start">
-      <UTooltip text="Change sort order">
+      <UTooltip :text="t('tooltip.change_sort_order')">
         <UButton 
           color="neutral"
           variant="ghost"
@@ -41,6 +41,7 @@
 <script setup lang="ts">
 import type { ButtonProps, DropdownMenuItem } from '@nuxt/ui'
 
+const { t } = useI18n()
 const {
   items,
   expanded,
@@ -77,7 +78,7 @@ function collapseAll() {
 
 const sortItems = computed(() => [
   [{
-    label: 'Name (A-Z)',
+    label: t('filters.name_asc'),
     type: 'checkbox',
     icon: 'i-lucide-arrow-down-a-z',
     checked: selectedFilter.value === 'nameAsc',
@@ -92,7 +93,7 @@ const sortItems = computed(() => [
     }
   },
   {
-    label: 'Name (Z-A)',
+    label: t('filters.name_desc'),
     type: 'checkbox',
     icon: 'i-lucide-arrow-up-z-a',
     checked: selectedFilter.value === 'nameDesc',
@@ -107,22 +108,7 @@ const sortItems = computed(() => [
     }
   }],
   [{
-    label: 'Modified date (newest first)',
-    type: 'checkbox',
-    icon: 'i-lucide-calendar-arrow-down',
-    checked: selectedFilter.value === 'modifiedDesc',
-    onSelect: (e:Event) => {
-      e.preventDefault()
-      setSortOrder('modified', 'desc')
-    },
-    onUpdateChecked: (checked: boolean) => {
-      if (checked) {
-        selectedFilter.value = 'modifiedDesc'
-      }
-    }
-  },
-  {
-    label: 'Modified date (oldest first)',
+    label: t('filters.modified_asc'),
     type: 'checkbox',
     icon: 'i-lucide-calendar-arrow-up',
     checked: selectedFilter.value === 'modifiedAsc',
@@ -135,23 +121,24 @@ const sortItems = computed(() => [
         selectedFilter.value = 'modifiedAsc'
       }
     }
-  }],
-  [{
-    label: 'Created date (newest first)',
+  },
+  {
+    label: t('filters.modified_desc'),
     type: 'checkbox',
     icon: 'i-lucide-calendar-arrow-down',
-    checked: selectedFilter.value === 'createdDesc',
+    checked: selectedFilter.value === 'modifiedDesc',
     onSelect: (e:Event) => {
       e.preventDefault()
-      setSortOrder('created', 'desc')
+      setSortOrder('modified', 'desc')
     },
     onUpdateChecked: (checked: boolean) => {
       if (checked) {
-        selectedFilter.value = 'createdDesc'
+        selectedFilter.value = 'modifiedDesc'
       }
     }
-  }, {
-    label: 'Created date (oldest first)',
+  }],
+  [{
+    label: t('filters.created_asc'),
     type: 'checkbox',
     icon: 'i-lucide-calendar-arrow-up',
     checked: selectedFilter.value === 'createdAsc',
@@ -162,6 +149,21 @@ const sortItems = computed(() => [
     onUpdateChecked: (checked: boolean) => {
       if (checked) {
         selectedFilter.value = 'createdAsc'
+      }
+    }
+  },
+  {
+    label: t('filters.created_desc'),
+    type: 'checkbox',
+    icon: 'i-lucide-calendar-arrow-down',
+    checked: selectedFilter.value === 'createdDesc',
+    onSelect: (e:Event) => {
+      e.preventDefault()
+      setSortOrder('created', 'desc')
+    },
+    onUpdateChecked: (checked: boolean) => {
+      if (checked) {
+        selectedFilter.value = 'createdDesc'
       }
     }
   }]
@@ -178,28 +180,28 @@ const buttons: Array<{
     color: 'neutral',
     variant: 'ghost',
     icon: 'i-lucide-file-plus',
-    tooltip: 'Create File',
+    tooltip: t('tooltip.new_file'),
     onClick: () => createItem(false)
   },
   {
     color: 'neutral',
     variant: 'ghost',
     icon: 'i-lucide-folder-plus',
-    tooltip: 'Create Folder',
+    tooltip: t('tooltip.new_folder'),
     onClick: () => createItem(true)
   },
   {
     color: 'neutral',
     variant: 'ghost',
     icon: 'i-lucide-chevrons-up-down',
-    tooltip: 'Expand all',
+    tooltip: t('tooltip.expand_all'),
     onClick: expandAll
   },
   {
     color: 'neutral',
     variant: 'ghost',
     icon: 'i-lucide-chevrons-down-up',
-    tooltip: 'Collapse all',
+    tooltip: t('tooltip.collapse_all'),
     onClick: collapseAll
   }
 ]

@@ -1,21 +1,21 @@
 <template>
   <UCard class="w-full">
-    <div class="w-full min-h-10 flex px-1">
+    <div class="w-full min-h-10 flex items-center px-1">
       <div class="w-full flex flex-col">
         <span>
-          Version 0.1.0
+          {{ t('settings.sections.general_settings.children.general.children.version.label', { versionNumber: appConfig.version }) }}
         </span>
         <ULink
           href="docs/CHANGELOG.md"
           target="_blank"
           class="text-sm text-dimmed hover:text-primary"
         >
-          See the changelog
+          {{ t('settings.sections.general_settings.children.general.children.version.changelog') }}
         </ULink>
       </div>
       <UButton 
         icon="i-lucide-refresh-cw"
-        label="Check for updates"
+        :label="t('settings.sections.general_settings.children.general.children.version.button_label')"
         variant="outline"
         color="neutral"
         size="sm"
@@ -26,30 +26,36 @@
 
     <div class="w-full min-h-10 flex px-1 justify-between items-center">
       <span>
-        Automatic updates
+        {{ t('settings.sections.general_settings.children.general.children.auto_update.label') }}
       </span>
       <USwitch v-model="value" size="md"/>
     </div>
 
     <USeparator class="my-4"/>
 
-    <div class="w-full min-h-10 flex px-1">
+    <div class="w-full min-h-10 flex items-center px-1">
       <div class="w-full flex flex-col">
         <span>
-          Language
+          {{ t('settings.sections.general_settings.children.general.children.language.label') }}
         </span>
         <span class="text-sm text-dimmed">
-          Change the display language
+          {{ t('settings.sections.general_settings.children.general.children.language.description') }}
         </span>
       </div>
-      <ULocaleSelect v-model="locale" :locales="Object.values(locales)" size="md"/>
+      <ULocaleSelect 
+        size="md"
+        :model-value="locale" 
+        :locales="[en, fr]" 
+        @update:model-value="setLocale($event)" 
+      />
     </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
-import * as locales from '@nuxt/ui/locale'
+import { en, fr } from '@nuxt/ui/locale'
 
-const locale = ref('en')
+const { t, locale, setLocale } = useI18n()
 const value = ref(true)
+const appConfig = useAppConfig()
 </script>

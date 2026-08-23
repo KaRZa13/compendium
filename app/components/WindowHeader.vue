@@ -9,26 +9,34 @@
       <div data-tauri-drag-region class="absolute inset-0" />
     </template>
     <template #title>
-      <UButton 
-        variant="ghost"
-        color="neutral"
-        :icon="!leftCollapsed ? 'i-lucide-panel-left-close' : 'i-lucide-panel-left-open'"
-        @click="leftCollapsed = !leftCollapsed" 
-      />
+      <UTooltip :text="!leftCollapsed ? t('tooltip.collapse_sidebar') : t('tooltip.expand_sidebar')">
+        <UButton 
+          variant="ghost"
+          color="neutral"
+          :icon="!leftCollapsed ? 'i-lucide-panel-left-close' : 'i-lucide-panel-left-open'"
+          @click="leftCollapsed = !leftCollapsed" 
+        />
+      </UTooltip>
     </template>
 
-    <div>Compendium</div>
+    <div>
+      {{ getWindowTitle() }}
+    </div>
 
     <template #right>
-      <UButton 
-        variant="ghost"
-        color="neutral"
-        :icon="!rightCollapsed ? 'i-lucide-panel-left-open' : 'i-lucide-panel-left-close'"
-        @click="rightCollapsed = !rightCollapsed"
-      />
+      <UTooltip :text="!rightCollapsed ? t('tooltip.collapse_sidebar') : t('tooltip.expand_sidebar')">
+        <UButton 
+          variant="ghost"
+          color="neutral"
+          :icon="!rightCollapsed ? 'i-lucide-panel-left-open' : 'i-lucide-panel-left-close'"
+          @click="rightCollapsed = !rightCollapsed"
+        />
+      </UTooltip>
       <UColorModeButton />
       <UModal :ui="{ content: 'max-w-5xl h-[80vh]' }">
-        <UButton icon="i-lucide-settings" color="neutral" variant="ghost" />
+        <UTooltip :text="t('tooltip.settings')">
+          <UButton icon="i-lucide-settings" color="neutral" variant="ghost" />
+        </UTooltip>
 
         <template #content>
           <SettingsDashboard />
@@ -48,6 +56,7 @@
 <script setup lang="ts">
 import { getCurrentWindow } from '@tauri-apps/api/window'
 
+const { t } = useI18n()
 const isMaximized = ref(false)
 const appWindow = getCurrentWindow()
 const close = () => appWindow.close()
@@ -57,10 +66,20 @@ const toggleMaximize = () => {
   isMaximized.value = !isMaximized.value
 }
 const {
+  rootPath,
+  selectedItem,
   debugShowStore,
   debugClearStore
 } = useFileExplorer()
 
 const leftCollapsed = defineModel<boolean>('leftCollapsed', { default: false })
 const rightCollapsed = defineModel<boolean>('rightCollapsed', { default: false })
+
+function getWindowTitle() {
+  if (!selectedItem.value || selectedItem.value.isDir) {
+    return `${rootPath.value?.split('/').pop()} - Compendium`
+  } else {
+    return `${selectedItem.value.label} - ${rootPath.value?.split('/').pop()} - Compendium`
+  }
+}
 </script>

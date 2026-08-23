@@ -22,11 +22,12 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
 
+const { t } = useI18n()
 const { rootPath, workspaces, resetRootFolder, setRootFolder } = useFileExplorer()
 const currentPath = computed(() => rootPath.value?.split('/').filter(Boolean).pop() || '')
 
 function workspaceName(path: string) {
-  return path.split('/').filter(Boolean).pop() || 'Root'
+  return path.split('/').filter(Boolean).pop() || ''
 }
 
 const items = computed<DropdownMenuItem[][]>(() => ([
@@ -36,7 +37,7 @@ const items = computed<DropdownMenuItem[][]>(() => ([
     onSelect: () => setRootFolder(path),
   })), [
     {
-    label: 'Manage folders',
+    label: t('context_menu.manage_workspaces'),
     icon: 'i-lucide-folder-cog',
     onSelect: () => resetRootFolder()
     }

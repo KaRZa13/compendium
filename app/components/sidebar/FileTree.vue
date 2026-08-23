@@ -62,13 +62,14 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
 const editingPath = ref<string | null>(null)
 const newName = ref('')
 const {
   items,
   selectedItem,
   expanded,
-  init,
+  initFileExplorer,
   onToggle,
   loadChildren,
   renameSelectedItem,
@@ -77,7 +78,7 @@ const {
 } = useFileExplorer()
 
 onMounted(() => {
-  init()
+  initFileExplorer()
 })
 
 async function confirmRename() {
@@ -99,7 +100,7 @@ async function toggleExpanded(item: FileTreeItem) {
 function getContextMenuItems(item: FileTreeItem) {
   const items = [
     {
-      label: 'Rename',
+      label: t('context_menu.rename'),
       icon: 'i-lucide-pencil-line',
       onSelect: () => {
         selectedItem.value = item
@@ -108,7 +109,7 @@ function getContextMenuItems(item: FileTreeItem) {
       }
     },
     {
-      label: 'Delete',
+      label: t('context_menu.delete'),
       icon: 'i-lucide-trash-2',
       onSelect: deleteSelectedItem
     }

@@ -22,4 +22,14 @@ export default defineNuxtConfig({
     },
   },
   ignore: ['**/src-tauri/**'],
+  i18n: {
+    locales: [
+      { code: 'fr', name: 'Français', file: 'fr.json' },
+      { code: 'en', name: 'English', file: 'en.json' }
+    ],
+    langDir: 'locales/',
+    defaultLocale: 'en',
+    // detectBrowserLanguage: false,
+    vueI18n: './i18n/i18n.config.ts',
+  }
 })

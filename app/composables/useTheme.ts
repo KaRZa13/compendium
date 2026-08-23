@@ -1,13 +1,27 @@
-import { useLocalStorage, createSharedComposable } from '@vueuse/core'
+import { createSharedComposable } from '@vueuse/core'
+import { load, type Store } from '@tauri-apps/plugin-store'
 import { omit } from '#ui/utils'
 import colors from 'tailwindcss/colors'
 
+const STORE_FILE = 'theme-settings.json'
+const PRIMARY_KEY = 'primary'
+const NEUTRAL_KEY = 'neutral'
+const RADIUS_KEY = 'radius'
+const FONT_KEY = 'font'
+const BLACK_AS_PRIMARY_KEY = 'blackAsPrimary'
+
+const DEFAULT_PRIMARY = 'green'
+const DEFAULT_NEUTRAL = 'slate'
+const DEFAULT_RADIUS = 0.25
+const DEFAULT_FONT = 'Public Sans'
+
 const _useTheme = () => {
   const appConfig = useAppConfig()
+  let store: Store | null = null
 
-  const _radius = useLocalStorage('nuxt-ui-radius', 0.25)
-  const _font = useLocalStorage('nuxt-ui-font', 'Public Sans')
-  const _blackAsPrimary = useLocalStorage('nuxt-ui-black-as-primary', false)
+  const _radius = ref(DEFAULT_RADIUS)
+  const _font = ref(DEFAULT_FONT)
+  const _blackAsPrimary = ref(false)
 
   const neutralColors = ['slate', 'gray', 'zinc', 'neutral', 'stone', 'taupe', 'mauve', 'mist', 'olive']
   const neutral = computed({
@@ -16,7 +30,7 @@ const _useTheme = () => {
     },
     set(option) {
       appConfig.ui.colors.neutral = option
-      window.localStorage.setItem('nuxt-ui-neutral', appConfig.ui.colors.neutral)
+      store?.set(NEUTRAL_KEY, option)
     }
   })
 
@@ -29,7 +43,7 @@ const _useTheme = () => {
     set(option) {
       appConfig.ui.colors.primary = option
       setBlackAsPrimary(false)
-      window.localStorage.setItem('nuxt-ui-primary', appConfig.ui.colors.primary)
+      store?.set(PRIMARY_KEY, option)
     }
   })
 
@@ -40,6 +54,7 @@ const _useTheme = () => {
     },
     set(option) {
       _radius.value = option
+      store?.set(RADIUS_KEY, option)
     }
   })
 
@@ -47,6 +62,7 @@ const _useTheme = () => {
 
   function setBlackAsPrimary(value: boolean) {
     _blackAsPrimary.value = value
+    store?.set(BLACK_AS_PRIMARY_KEY, value)
   }
   const fonts = ['Public Sans', 'DM Sans', 'Geist', 'Inter', 'Poppins', 'Outfit', 'Raleway']
   const font = computed({
@@ -55,6 +71,7 @@ const _useTheme = () => {
     },
     set(option) {
       _font.value = option
+      store?.set(FONT_KEY, option)
     }
   })
 
@@ -63,7 +80,7 @@ const _useTheme = () => {
   const blackAsPrimaryStyle = computed(() => _blackAsPrimary.value ? `:root { --ui-primary: black; } .dark { --ui-primary: white; }` : ':root {}')
   const link = computed(() => {
     const name = _font.value
-    if (name === 'Public Sans') return []
+    if (name === DEFAULT_FONT) return []
     return [{
       rel: 'stylesheet' as const,
       href: `https://fonts.googleapis.com/css2?family=${encodeURIComponent(name)}:wght@400;500;600;700&display=swap`,
@@ -78,23 +95,31 @@ const _useTheme = () => {
   ]
 
   const hasChanges = computed(() => {
-    return appConfig.ui.colors.primary !== 'green'
+    return appConfig.ui.colors.primary !== DEFAULT_PRIMARY
       || _blackAsPrimary.value
-      || appConfig.ui.colors.neutral !== 'slate'
-      || _radius.value !== 0.25
-      || _font.value !== 'Public Sans'
+      || appConfig.ui.colors.neutral !== DEFAULT_NEUTRAL
+      || _radius.value !== DEFAULT_RADIUS
+      || _font.value !== DEFAULT_FONT
   })
 
-  function resetTheme() {
-    appConfig.ui.colors.primary = 'green'
-    window.localStorage.removeItem('nuxt-ui-primary')
+  async function initTheme() {
+    store = await load(STORE_FILE)
+    appConfig.ui.colors.primary = (await store.get<string>(PRIMARY_KEY)) ?? DEFAULT_PRIMARY
+    appConfig.ui.colors.neutral = (await store.get<string>(NEUTRAL_KEY)) ?? DEFAULT_NEUTRAL
+    _radius.value = (await store.get<number>(RADIUS_KEY)) ?? DEFAULT_RADIUS
+    _font.value = (await store.get<string>(FONT_KEY)) ?? DEFAULT_FONT
+    _blackAsPrimary.value = (await store.get<boolean>(BLACK_AS_PRIMARY_KEY)) ?? false
+  }
 
-    appConfig.ui.colors.neutral = 'slate'
-    window.localStorage.removeItem('nuxt-ui-neutral')
-
-    _radius.value = 0.25
-    _font.value = 'Public Sans'
+  async function resetTheme() {
+    appConfig.ui.colors.primary = DEFAULT_PRIMARY
+    appConfig.ui.colors.neutral = DEFAULT_NEUTRAL
+    _radius.value = DEFAULT_RADIUS
+    _font.value = DEFAULT_FONT
     _blackAsPrimary.value = false
+
+    await store?.clear()
+    await store?.save()
   }
 
   return {
@@ -111,6 +136,7 @@ const _useTheme = () => {
     link,
     style,
     hasChanges,
+    initTheme,
     resetTheme
   }
 }

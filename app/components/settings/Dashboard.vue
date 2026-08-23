@@ -1,12 +1,12 @@
 <template>
-  <div class="flex flex-col flex-1">
+  <div class="h-full flex flex-col flex-1">
     <UHeader title="" :ui="{ container: 'px-4! max-w-none justify-center' }">
       <template #default>
-        <span class="font-bold">Settings</span>
+        <span class="font-bold">{{ t('settings.title') }}</span>
       </template>
     </UHeader>
 
-    <div class="flex flex-1 min-h-0">
+    <div class="h-full flex flex-1">
       <USidebar
         collapsible="none"
         :ui="{
@@ -22,9 +22,12 @@
         />
       </USidebar>
 
-      <div class="flex-1 px-10 py-12">
-        <component :is="components[activeTab]" class="size-full" />
-      </div>
+      <UScrollArea
+        shadow
+        class="h-full w-full flex-1 px-10 py-12"
+      >
+        <component :is="components[activeTab]" />
+      </UScrollArea>
     </div>
   </div>
 </template>
@@ -42,14 +45,15 @@ const components: Record<string, any> = {
   templates: resolveComponent('SettingsTemplates')
 }
 
+const { t } = useI18n()
 const activeTab = ref('general')
 const tabs = computed<NavigationMenuItem[][]>(() => [
   [{
-    label: 'Options',
+    label: t('settings.sections.general_settings.label'),
     type: 'label'
   },
   {
-    label: 'General',
+    label: t('settings.sections.general_settings.children.general.label'),
     icon: 'i-lucide-house',
     active: activeTab.value === 'general',
     onSelect: () => {
@@ -57,7 +61,7 @@ const tabs = computed<NavigationMenuItem[][]>(() => [
     }
   },
   {
-    label: 'Appearance',
+    label: t('settings.sections.general_settings.children.appearance.label'),
     icon: 'i-lucide-swatch-book',
     active: activeTab.value === 'appearance',
     onSelect: () => {
@@ -65,15 +69,7 @@ const tabs = computed<NavigationMenuItem[][]>(() => [
     }
   },
   {
-    label: 'Interface',
-    icon: 'i-lucide-laptop-minimal',
-    active: activeTab.value === 'interface',
-    onSelect: () => {
-      activeTab.value = 'interface'
-    }
-  },
-  {
-    label: 'Editor',
+    label: t('settings.sections.general_settings.children.editor.label'),
     icon: 'i-lucide-pencil-line',
     active: activeTab.value === 'editor',
     onSelect: () => {
@@ -81,7 +77,7 @@ const tabs = computed<NavigationMenuItem[][]>(() => [
     }
   },
   {
-    label: 'Shortcuts',
+    label: t('settings.sections.general_settings.children.shortcuts.label'),
     icon: 'i-lucide-command',
     active: activeTab.value === 'shortcuts',
     onSelect: () => {
@@ -89,11 +85,11 @@ const tabs = computed<NavigationMenuItem[][]>(() => [
     }
   }],
   [{
-    label: 'Core',
+    label: t('settings.sections.core.label'),
     type: 'label'
   },
   {
-    label: 'Canvas',
+    label: t('settings.sections.core.children.canvas.label'),
     icon: 'i-lucide-layout-dashboard',
     active: activeTab.value === 'canvas',
     onSelect: () => {
@@ -101,7 +97,7 @@ const tabs = computed<NavigationMenuItem[][]>(() => [
     }
   },
   {
-    label: 'Daily Report',
+    label: t('settings.sections.core.children.daily_report.label'),
     icon: 'i-lucide-calendar',
     active: activeTab.value === 'daily',
     onSelect: () => {
@@ -109,7 +105,7 @@ const tabs = computed<NavigationMenuItem[][]>(() => [
     }
   },
   {
-    label: 'Templates',
+    label: t('settings.sections.core.children.templates.label'),
     icon: 'i-lucide-file-text',
     active: activeTab.value === 'templates',
     onSelect: () => {

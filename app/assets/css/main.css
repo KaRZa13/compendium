@@ -9,3 +9,16 @@ html {
 :root {
     --ui-header-height: 2.5rem;
 }
+
+@keyframes spin-once {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-spin-once {
+    animation: spin-once 0.4s ease-in-out;
+}
