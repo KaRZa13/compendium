@@ -41,6 +41,14 @@
 <script setup lang="ts">
 import type { ButtonProps, DropdownMenuItem } from '@nuxt/ui'
 
+interface ButtonItems {
+  color: ButtonProps['color']
+  variant: ButtonProps['variant']
+  icon: string
+  tooltip: string
+  onClick: (event: MouseEvent) => void
+}
+
 const { t } = useI18n()
 const {
   items,
@@ -169,13 +177,7 @@ const sortItems = computed(() => [
   }]
 ] satisfies DropdownMenuItem[][])
 
-const buttons: Array<{
-  color: ButtonProps['color']
-  variant: ButtonProps['variant']
-  icon: string
-  tooltip: string
-  onClick: (event: MouseEvent) => void
-}> = [
+const buttons: Ref<Array<ButtonItems>> = ref([
   {
     color: 'neutral',
     variant: 'ghost',
@@ -204,5 +206,5 @@ const buttons: Array<{
     tooltip: t('tooltip.collapse_all'),
     onClick: collapseAll
   }
-]
+])
 </script>

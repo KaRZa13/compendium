@@ -48,8 +48,8 @@
     },
 
     "tooltip": {
-        "new_folder": "Créer un nouveau dossier",
         "new_file": "Créer un nouveau fichier",
+        "new_folder": "Créer un nouveau dossier",
         "change_sort_order": "Modifier l'ordre de tri",
         "expand_all": "Développer tous les éléments",
         "collapse_all": "Réduire tous les éléments",
