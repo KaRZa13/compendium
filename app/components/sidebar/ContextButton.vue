@@ -56,7 +56,7 @@ const {
   loadChildren,
   createItem,
   setSortOrder,
-} = useFileExplorer()
+} = useFileTree()
 
 const selectedFilter = ref<'nameAsc' | 'nameDesc' | 'modifiedAsc' | 'modifiedDesc' | 'createdAsc' | 'createdDesc'>('nameAsc')
 

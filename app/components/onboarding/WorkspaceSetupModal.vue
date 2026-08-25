@@ -18,7 +18,7 @@
               :label="workspace.split('/').filter(Boolean).pop() || ''"
               variant="ghost"
               color="neutral"
-              @click="setRootFolder(workspace)"
+              @click="setCurrentWorkspace(workspace)"
             >
               <div v-if="editingWorkspaceName !== workspace" class="w-full flex flex-col items-start">
                 <span>
@@ -116,7 +116,7 @@
                     :label="t('buttons.open')"
                     variant="outline"
                     color="neutral"
-                    @click="changeFolder"
+                    @click="changeWorkspace"
                     :ui="{ base: 'min-w-24 flex items-center justify-center cursor-pointer'}"
                   />
                 </div>
@@ -193,16 +193,17 @@ import type { TabsItem } from '@nuxt/ui'
 
 const { t } = useI18n()
 
+const { pickFolder } = useFileSystem()
+
 const {
   workspaces,
   needsRootFolder,
-  changeFolder,
-  setRootFolder,
-  pickFolder,
+  changeWorkspace,
+  setCurrentWorkspace,
   createWorkspace,
-  removeWorkspace,
+  deleteWorkspace,
   renameWorkspace,
-} = useFileExplorer()
+} = useWorkspace()
 
 const activeTab = ref<'base' | 'new'>('base')
 const folderName = ref('')
@@ -240,7 +241,7 @@ function getWorkspaceActions(workspace: string) {
     {
       label: t('context_menu.delete'),
       icon: 'i-lucide-trash-2',
-      onSelect: () => removeWorkspace(workspace)
+      onSelect: () => deleteWorkspace(workspace)
     }
   ]
   return actions

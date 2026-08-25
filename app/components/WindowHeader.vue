@@ -17,6 +17,8 @@
           @click="leftCollapsed = !leftCollapsed" 
         />
       </UTooltip>
+      <UButton variant="ghost" color="neutral" icon="i-lucide-store" @click="debugShowStore" />
+      <UButton variant="ghost" color="error" icon="i-lucide-trash-2" @click="debugClearStore" />
     </template>
 
     <div>
@@ -42,8 +44,7 @@
           <SettingsDashboard />
         </template>
       </UModal>
-      <UButton variant="ghost" color="neutral" icon="i-lucide-bug" @click="debugShowStore" />
-      <UButton variant="ghost" color="error" icon="i-lucide-trash-2" @click="debugClearStore" />
+      
       <div class="flex gap-2">
         <UButton variant="ghost" color="neutral" icon="i-lucide-minus" @click="minimize" />
         <UButton size="sm" variant="ghost" color="neutral" :icon="isMaximized ? 'i-lucide-minimize-2' : 'i-lucide-square'" @click="toggleMaximize" />
@@ -67,10 +68,11 @@ const toggleMaximize = () => {
 }
 const {
   rootPath,
-  selectedItem,
   debugShowStore,
   debugClearStore
-} = useFileExplorer()
+} = useWorkspace()
+
+const { selectedItem } = useFileTree()
 
 const leftCollapsed = defineModel<boolean>('leftCollapsed', { default: false })
 const rightCollapsed = defineModel<boolean>('rightCollapsed', { default: false })

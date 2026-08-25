@@ -69,16 +69,17 @@ const {
   items,
   selectedItem,
   expanded,
-  initFileExplorer,
   onToggle,
   loadChildren,
   renameSelectedItem,
   deleteSelectedItem,
   moveItem,
-} = useFileExplorer()
+} = useFileTree()
+
+const { initWorkspace } = useWorkspace()
 
 onMounted(() => {
-  initFileExplorer()
+  initWorkspace()
 })
 
 async function confirmRename() {
