@@ -1,13 +1,18 @@
 <template>
-  <section class="w-full flex flex-col gap-2">
+  <section class="w-full flex flex-col gap-8">
     <!-- Tabs -->
      <EditorTabs />
-     <h1 class="bg-blue-500">OUI OUI LE H1</h1>
-     <UEditor
-       content-type="markdown"
-     />
+     <div class="w-full px-48">
+       <UEditor
+         v-if="activeTab"
+         :key="activeTab.path"
+         v-model="content"
+         content-type="markdown"
+       />
+     </div>
   </section>
 </template>
 
 <script setup lang="ts">
+const { activeTab, content } = useEditorTabs()
 </script>

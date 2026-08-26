@@ -1,6 +1,6 @@
 import { join } from '@tauri-apps/api/path'
 import { open as openDialog } from '@tauri-apps/plugin-dialog'
-import { mkdir, remove, rename, writeTextFile, readDir } from '@tauri-apps/plugin-fs'
+import { mkdir, remove, rename, readTextFile, writeTextFile, readDir } from '@tauri-apps/plugin-fs'
 
 export interface FileSystemItem {
   path: string
@@ -72,6 +72,14 @@ export function useFileSystem() {
     await rename(item.path, newPath)
     return newPath
   }
+
+  async function readFile(path: string): Promise<string> {
+    return readTextFile(path)
+  }
+
+  async function writeFile(path: string, content: string): Promise<void> {
+    await writeTextFile(path, content)
+  }
   //#endregion
 
   return {
@@ -80,6 +88,8 @@ export function useFileSystem() {
     createFolder,
     deleteItem,
     renameItem,
-    moveItem
+    moveItem,
+    readFile,
+    writeFile
   }
 }

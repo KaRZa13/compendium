@@ -72,16 +72,16 @@ const {
   debugClearStore
 } = useWorkspace()
 
-const { selectedItem } = useFileTree()
+const { activeTabPath } = useEditorTabs()
 
 const leftCollapsed = defineModel<boolean>('leftCollapsed', { default: false })
 const rightCollapsed = defineModel<boolean>('rightCollapsed', { default: false })
 
 function getWindowTitle() {
-  if (!selectedItem.value || selectedItem.value.isDir) {
+  if (!activeTabPath.value) {
     return `${rootPath.value?.split('/').pop()} - Compendium`
   } else {
-    return `${selectedItem.value.label} - ${rootPath.value?.split('/').pop()} - Compendium`
+    return `${activeTabPath.value?.split('/').pop()} - ${rootPath.value?.split('/').pop()} - Compendium`
   }
 }
 </script>

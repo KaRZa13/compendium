@@ -2,6 +2,7 @@
   <UTree
     expanded-icon="i-lucide-folder-open"
     collapsed-icon="i-lucide-folder"
+    selection-behavior="replace"
     v-model="selectedItem"
     v-model:expanded="expanded"
     :get-key="(item) => item.path"
@@ -26,7 +27,7 @@
             dragOverPath === item.path ? 'bg-elevated' : ''
           ]"
           draggable="true"
-          @dblclick="item.isDir && toggleExpanded(item)"
+          @dblclick="item.isDir ? toggleExpanded(item) : openTab(item, { preview: false })"
           @dragstart="onDragStart($event, item)"
           @dragend="onDragEnd"
           @dragenter="onDragEnterItem($event, item)"
@@ -76,6 +77,7 @@ const {
   moveItem,
 } = useFileTree()
 
+const { openTab } = useEditorTabs()
 const { initWorkspace } = useWorkspace()
 
 onMounted(() => {

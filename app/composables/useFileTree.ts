@@ -99,6 +99,7 @@ function toFsItem(item: FileTreeItem): FileSystemItem {
 const _useFileTree = () => {
   const { rootPath } = useWorkspace()
   const { createFile, createFolder, deleteItem, renameItem, moveItem: moveFsItem } = useFileSystem()
+  const { openTab, activeTabPath } = useEditorTabs()
 
   const items = ref<FileTreeItem[]>([])
   const selectedItem = shallowRef<FileTreeItem>()
@@ -113,6 +114,21 @@ const _useFileTree = () => {
     }
     items.value = await entriesToItems(rootPath.value, await readDir(rootPath.value), sortBy.value, sortDirection.value)
   }
+
+  // Simple clic dans l'arbre = ouverture en onglet "temporaire" (aperçu). Voir useEditorTabs.
+  watch(selectedItem, (newValue) => {
+    if (!newValue) return
+    openTab(newValue, { preview: true })
+  })
+
+  // Inverse : changer d'onglet actif (clic dans la barre d'onglets, épinglage, fermeture) doit
+  // surligner le fichier correspondant dans l'arbre. Sans risque de boucle : openTab()/activate()
+  // sont des no-op quand le chemin est déjà actif.
+  watch(activeTabPath, (path) => {
+    if (!path) return
+    const node = findNode(items.value, path)
+    if (node) selectedItem.value = node
+  })
 
   watch(rootPath, loadRoot, { immediate: true })
 

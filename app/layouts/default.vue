@@ -19,7 +19,7 @@
       }"
     >
       <template #default="{ collapsed }">
-        <section v-show="!collapsed" class="flex flex-col gap-4" >
+        <section v-show="!collapsed" class="h-full flex flex-col gap-4" @click="deselectItem">
           <SidebarContextButton />
           <SidebarFileTree />
         </section>
@@ -73,6 +73,11 @@
 // Sidebar State
 const leftCollapsed = ref(false)
 const rightCollapsed = ref(false)
+
+const { selectedItem } = useFileTree()
+function deselectItem() {
+  selectedItem.value = undefined
+}
 
 defineShortcuts({
   'ctrl_b' : () => {
